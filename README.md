@@ -73,13 +73,17 @@ To provide an efficient, user-friendly solution that simplifies the administrati
 - Version Control: **Git** for source code management
 - IDE Support: IntelliJ IDEA / Eclipse
 
+**Testing Framework**
+- **FEST Swing** (1.2.1) - GUI testing framework for testing Swing components
+- **JUnit 4** - Unit testing framework for core logic testing
+
 **Libraries & Dependencies**
 - `mysql-connector-java` (8.0.27) - Database connectivity
 - `javafx-swing` (16) - Extended GUI components
 - `fest-swing` (1.2.1) - GUI testing framework
 - `jdom` (1.0) - XML parsing for configuration
 - `pdfbox` (2.0.27) - PDF report generation
-- `junit-jupiter` (5.8.2) - Unit testing framework
+- `junit` (4.13.2) - Unit testing framework
 
 ### Project Structure
 
@@ -109,9 +113,9 @@ StudentManagementSystem/
 │   │           └── PasswordGenerator.exe
 │   └── test/
 │       └── java/sms/sms/
-│           ├── DBHandlerTest.java
-│           ├── ConnectionViewTest.java
-│           └── ManagementViewTest.java
+│           ├── DBHandlerTest.java                # Database logic tests
+│           ├── ConnectionViewTest.java          # Connection GUI tests
+│           └── ManagementViewTest.java          # Management GUI tests
 ├── Languages.xml                # Configuration file
 ├── pom.xml                       # Maven configuration
 └── README.md                     # This file
@@ -228,9 +232,9 @@ Before you begin, ensure you have the following installed:
 
 ## 🧪 Testing & Quality Assurance
 
-### Running Tests
+The project includes comprehensive test suites covering both GUI and database logic using JUnit and FEST Swing frameworks.
 
-The project includes 26 comprehensive JUnit tests covering database operations, connection validation, and management functionality.
+### Running Tests
 
 #### Prerequisites for Tests
 
@@ -243,40 +247,10 @@ mvn -version
 # macOS: brew services start mysql
 # Linux: sudo systemctl start mysql
 
-# 3. Test database created
+# 3. Database created
 mysql -u root -p
-mysql> CREATE DATABASE test_studentsdb;
+mysql> CREATE DATABASE studentsdb;
 mysql> EXIT;
-```
-
-#### Test Setup (2 Minutes)
-
-**Step 1: Add JUnit Dependencies to pom.xml**
-
-Add to the `<dependencies>` section:
-
-```xml
-<!-- JUnit 5 -->
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter-api</artifactId>
-    <version>5.8.2</version>
-    <scope>test</scope>
-</dependency>
-
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter-engine</artifactId>
-    <version>5.8.2</version>
-    <scope>test</scope>
-</dependency>
-```
-
-**Step 2: Run All Tests**
-
-```bash
-cd StudentManagementSystem
-mvn clean test
 ```
 
 #### Test Execution Commands
@@ -291,7 +265,7 @@ mvn test -Dtest=ConnectionViewTest
 mvn test -Dtest=ManagementViewTest
 
 # Run specific test method
-mvn test -Dtest=DBHandlerTest#testDatabaseConnectionSuccess
+mvn test -Dtest=DBHandlerTest#checkIfTableExistsTest
 
 # Generate code coverage report
 mvn clean test jacoco:report
@@ -311,68 +285,89 @@ mvn clean package -DskipTests
 
 ### Test Coverage
 
-| Test Class | Tests | Coverage Area |
-|-----------|-------|---------------|
-| DBHandlerTest | 8 | Database connection, CRUD operations, SQL injection prevention, connection pooling |
-| ConnectionViewTest | 8 | Connection parameter validation, MySQL connection establishment, credential validation |
-| ManagementViewTest | 10 | Student CRUD operations, email/phone validation, search functionality, data display |
-| **TOTAL** | **26** | **>80% Code Coverage** |
+| Test Class | Tests | Framework | Coverage Area |
+|-----------|-------|-----------|---------------|
+| **DBHandlerTest** | 3+ | JUnit 4 | Database logic, table verification, faculty/course CRUD |
+| **ConnectionViewTest** | 3 | FEST Swing | Connection form validation, database connection, error handling |
+| **ManagementViewTest** | 15+ | FEST Swing | GUI interactions, student CRUD, form validation, error messages |
+
+### Test Descriptions
+
+#### DBHandlerTest.java (Core Database Logic Tests)
+
+Using JUnit 4 framework to test backend database operations:
+
+- **checkIfTableExistsTest** - Verifies table existence checking with various inputs
+  - Tests valid tables: students, courses, faculties
+  - Tests invalid inputs: non-existent tables, special characters, empty strings
+  
+- **addFacultyTest** - Tests faculty addition to database
+  - Normal faculty names
+  - Special characters and numbers
+  - Edge cases: empty strings, spaces
+  
+- **addCourse** - Tests course addition functionality
+  - Various course durations (positive, negative, zero)
+  - Faculty association validation
+
+#### ConnectionViewTest.java (Database Connection GUI Tests)
+
+Using FEST Swing framework to test GUI components:
+
+- **emptyFieldsTest** - Validates error when connection fields are empty
+  - Expected: "Please fill in all the empty fields!"
+  
+- **wrongDatabaseUrl** - Tests connection with invalid database URL
+  - Expected: "Connection with the database hasn't been established! Please check your credentials!"
+  
+- **correctCredentials** - Tests successful database connection
+  - Expected: "Connection with the database has been successfully established!"
+
+#### ManagementViewTest.java (Student Management GUI Tests)
+
+Comprehensive GUI testing using FEST Swing:
+
+**Student Management Tests:**
+- **emptyFieldsTest** - Validates error for empty student form fields
+- **addStudentSuccessfully** - Tests successful student addition with valid data
+- **addStudentWithWrongAge** - Tests validation of non-numeric age input
+- **addStudentWithWrongStartedDate** - Tests date format validation (YYYY-MM-DD)
+- **deleteWithoutSelection** - Tests error when deleting without selecting student
+
+**Faculty Management Tests:**
+- **addFacultySuccessfully** - Tests faculty addition workflow
+- **addFacultyThatExists** - Tests duplicate prevention for faculties
+
+**Course Management Tests:**
+- **addCourseSuccessfully** - Tests course creation with valid data
+- **addCourseWithoutName** - Tests error handling for missing course name
+- **addCourseWithWrongDuration** - Tests duration validation (digits only)
+- **addCourseThatExists** - Tests duplicate prevention for courses
+
+**General Tests:**
+- **disconnectWarning** - Tests disconnect confirmation dialog
 
 ### Expected Test Results
 
 When you run `mvn clean test`, you should see:
 
 ```
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running sms.sms.DBHandlerTest
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 ✅
-
-[INFO] Running sms.sms.ConnectionViewTest
-[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 ✅
-
-[INFO] Running sms.sms.ManagementViewTest
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 ✅
-
-[INFO] -------------------------------------------------------
-[INFO] BUILD SUCCESS ✅
-[INFO] Total time: 5.146s
+Tests run: 21+, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
 ```
 
-### Test Descriptions
+### Running Tests Individually
 
-#### DBHandlerTest.java (8 Tests)
-- **testDatabaseConnectionSuccess** - Verify successful MySQL connection
-- **testInvalidDatabaseCredentials** - Verify connection fails with wrong credentials
-- **testDatabaseInsert** - Verify INSERT operations work correctly
-- **testDatabaseQuery** - Verify SELECT queries return data
-- **testDatabaseUpdate** - Verify UPDATE operations modify records
-- **testDatabaseDelete** - Verify DELETE operations remove records
-- **testSQLInjectionPrevention** - Verify SQL injection attacks are prevented
-- **testConnectionPooling** - Verify connection pool handles multiple queries
+```bash
+# Test database operations only
+mvn test -Dtest=DBHandlerTest
 
-#### ConnectionViewTest.java (8 Tests)
-- **testValidConnectionParameters** - Verify valid parameters pass validation
-- **testEmptyHostField** - Verify empty host is rejected
-- **testEmptyUsernameField** - Verify empty username is rejected
-- **testInvalidPortNumber** - Verify invalid port is rejected
-- **testEstablishConnection** - Verify database connection establishment
-- **testInvalidHostAddress** - Verify connection fails with invalid host
-- **testConnectionStringFormat** - Verify connection string format is correct
-- **testSaveConnectionCredentials** - Verify credentials are saved properly
+# Test connection GUI
+mvn test -Dtest=ConnectionViewTest
 
-#### ManagementViewTest.java (10 Tests)
-- **testAddStudentRecord** - Verify student addition works
-- **testValidateStudentEmail** - Verify valid email format passes
-- **testInvalidEmailFormat** - Verify invalid email is rejected
-- **testDisplayAllStudents** - Verify all students can be retrieved
-- **testUpdateStudentRecord** - Verify student records can be updated
-- **testDeleteStudentRecord** - Verify student deletion works
-- **testValidateStudentIdFormat** - Verify valid student ID format passes
-- **testSearchStudentById** - Verify student search works correctly
-- **testValidatePhoneNumber** - Verify valid phone number passes
-- **testInvalidPhoneNumberLength** - Verify invalid phone number is rejected
+# Test management GUI
+mvn test -Dtest=ManagementViewTest
+```
 
 ---
 
@@ -385,17 +380,15 @@ The application uses the following MySQL tables:
 CREATE TABLE students (
     student_id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    phone VARCHAR(10),
+    surname VARCHAR(100),
+    age INT,
     enrollment_date DATE
 );
 
 -- Faculties table
 CREATE TABLE faculties (
     faculty_id VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    department VARCHAR(50)
+    name VARCHAR(100) NOT NULL
 );
 
 -- Courses table
@@ -403,6 +396,7 @@ CREATE TABLE courses (
     course_id VARCHAR(20) PRIMARY KEY,
     course_name VARCHAR(100) NOT NULL,
     faculty_id VARCHAR(20),
+    duration INT,
     FOREIGN KEY (faculty_id) REFERENCES faculties(faculty_id)
 );
 
@@ -526,8 +520,14 @@ Edit `pom.xml` to customize build settings:
 ### Tests Fail: "Connection refused"
 - **Solution**:
   - Start MySQL: `brew services start mysql`
-  - Create test database: `mysql -u root -p` then `CREATE DATABASE test_studentsdb;`
+  - Create database: `mysql -u root -p` then `CREATE DATABASE studentsdb;`
   - Ensure MySQL credentials in tests match your setup
+
+### Tests Fail: "FEST Swing initialization error"
+- **Solution**:
+  - Ensure FEST Swing dependency is in pom.xml
+  - Tests require GUI to be available (may fail in headless environments)
+  - Use Xvfb on Linux to provide virtual display: `xvfb-run mvn test`
 
 ---
 
@@ -535,7 +535,7 @@ Edit `pom.xml` to customize build settings:
 
 - **Database Passwords**: Never commit database credentials to git. Use environment variables or `.env` files
 - **User Authentication**: Passwords should be hashed using bcrypt or similar before storage
-- **Input Validation**: All user inputs are validated server-side to prevent SQL injection
+- **Input Validation**: All user inputs are validated to prevent SQL injection
 - **Access Control**: Role-based access ensures faculty cannot access admin functions
 - **Data Privacy**: Sensitive student data should comply with FERPA/GDPR regulations
 
@@ -563,21 +563,6 @@ Edit `pom.xml` to customize build settings:
 
 ---
 
-## 📞 Support & Contact
-
-For issues, questions, or feature requests:
-- **GitHub Issues**: [Create an Issue](https://github.com/Mushmat/StudentManagementSystem/issues)
-- **Email**: Contact the project maintainers
-- **Documentation**: Refer to inline code comments and this README
-
----
-
-## 📄 License
-
-This project is provided for educational purposes. Check LICENSE file for details.
-
----
-
 ## 🙏 Acknowledgements
 
 - **[GitHub](https://github.com/)**: Version control and repository hosting
@@ -585,19 +570,8 @@ This project is provided for educational purposes. Check LICENSE file for detail
 - **[Oracle Java](https://www.oracle.com/java/)**: Java platform and tools
 - **[Maven](https://maven.apache.org/)**: Build automation and dependency management
 - **[Apache PDFBox](https://pdfbox.apache.org/)**: PDF generation library
+- **[FEST Swing](https://github.com/alexruiz/fest-swing)**: GUI testing framework
 - **Contributors**: Team members for their valuable effort and support
 
 ---
 
-## 📝 Version History
-
-| Version | Date | Changes |
-|---------|------|----------|
-| 0.0.1 | 2024-11-27 | Initial release with core functionality |
-| 0.0.2 | 2024-12-07 | Added comprehensive testing suite (26 JUnit tests) |
-
----
-
-**Last Updated**: December 2024  
-**Status**: ✅ Active Development  
-**Made with ❤️ by the EduCore Hub Team**
