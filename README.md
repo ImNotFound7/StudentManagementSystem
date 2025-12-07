@@ -8,12 +8,9 @@
 
 | Name | Roll Number |
 |------|-------------|
-| Akshat Tyagi | IMT2023551 |
-| Chirayu Choudhary | IMT2023004 |
-| Ishaan Sodhi | IMT2023090 |
-| Nikunj Mahajan | IMT2023068 |
 | Shivek Ranjan | IMT2023042 |
-| Swayam Kotecha | IMT2023615 |
+| Navish | IMT2023060 |
+| Digvijaysinh Pawar | IMT2023099 |
 
 ---
 
@@ -371,60 +368,6 @@ mvn test -Dtest=ManagementViewTest
 
 ---
 
-## 📊 Database Schema
-
-The application uses the following MySQL tables:
-
-```sql
--- Students table
-CREATE TABLE students (
-    student_id VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    surname VARCHAR(100),
-    age INT,
-    enrollment_date DATE
-);
-
--- Faculties table
-CREATE TABLE faculties (
-    faculty_id VARCHAR(20) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
-);
-
--- Courses table
-CREATE TABLE courses (
-    course_id VARCHAR(20) PRIMARY KEY,
-    course_name VARCHAR(100) NOT NULL,
-    faculty_id VARCHAR(20),
-    duration INT,
-    FOREIGN KEY (faculty_id) REFERENCES faculties(faculty_id)
-);
-
--- Attendance table
-CREATE TABLE attendance (
-    attendance_id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id VARCHAR(20),
-    course_id VARCHAR(20),
-    attendance_date DATE,
-    status ENUM('Present', 'Absent'),
-    FOREIGN KEY (student_id) REFERENCES students(student_id),
-    FOREIGN KEY (course_id) REFERENCES courses(course_id)
-);
-
--- Grades table
-CREATE TABLE grades (
-    grade_id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id VARCHAR(20),
-    course_id VARCHAR(20),
-    grade DECIMAL(5,2),
-    assignment_name VARCHAR(100),
-    FOREIGN KEY (student_id) REFERENCES students(student_id),
-    FOREIGN KEY (course_id) REFERENCES courses(course_id)
-);
-```
-
----
-
 ## 💻 Usage Guide
 
 ### For Administrators
@@ -571,7 +514,6 @@ Edit `pom.xml` to customize build settings:
 - **[Maven](https://maven.apache.org/)**: Build automation and dependency management
 - **[Apache PDFBox](https://pdfbox.apache.org/)**: PDF generation library
 - **[FEST Swing](https://github.com/alexruiz/fest-swing)**: GUI testing framework
-- **Contributors**: Team members for their valuable effort and support
 
 ---
 
