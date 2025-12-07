@@ -145,42 +145,9 @@ Before you begin, ensure you have the following installed:
 
 ## 📋 Installation & Setup
 
-### Option 1: Quick Start (Pre-built JAR)
-
-1. **Download the pre-built JAR file** from the [Google Drive link](https://drive.google.com/drive/folders/1nMiEeCQOFQeBRboBLAmh8gNAsqKZ2-cK?usp=sharing)
-
-2. **Extract the downloaded files** and ensure you have:
-   - `S-M-S-0.0.1-SNAPSHOT.jar`
-   - `Languages.xml`
-   - `AttendanceProcessor.exe`
-   - `GradeProcessor.exe`
-   - `PasswordGenerator.exe`
-
-3. **Create MySQL Database**:
-   ```bash
-   mysql -u root -p
-   ```
-   Enter your password when prompted, then run:
-   ```sql
-   CREATE DATABASE studentsdb;
-   ```
-
-4. **Run the Application**:
-   ```bash
-   java -jar S-M-S-0.0.1-SNAPSHOT.jar
-   ```
-
-5. **Login Credentials**:
-   - Enter your MySQL username and password when prompted
-   - Use the default admin credentials (if configured)
-
----
-
-### Option 2: Build from Source
-
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/Mushmat/StudentManagementSystem.git
+   git clone https://github.com/ImNotFound7/StudentManagementSystem.git
    cd StudentManagementSystem
    ```
 
@@ -264,20 +231,6 @@ mvn test -Dtest=ManagementViewTest
 # Run specific test method
 mvn test -Dtest=DBHandlerTest#checkIfTableExistsTest
 
-# Generate code coverage report
-mvn clean test jacoco:report
-
-# View coverage report (macOS)
-open target/site/jacoco/index.html
-
-# View coverage report (Linux)
-xdg-open target/site/jacoco/index.html
-
-# View coverage report (Windows)
-start target/site/jacoco/index.html
-
-# Skip tests during build
-mvn clean package -DskipTests
 ```
 
 ### Test Coverage
